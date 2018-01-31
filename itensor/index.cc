@@ -107,6 +107,40 @@ prime(int inc)
 string Index::
 name() const  { return putprimes(name_.c_str(),primelevel_); }
 
+Index& Index::
+rename(std::string const& str) 
+    {
+    std::string strname;
+    int strprimelevel;
+    bool wildcard;
+    int primeincrease;
+    splitRawnamePrimelevel(str, strname, strprimelevel, wildcard, primeincrease);
+    name_ = IndexName(strname.c_str());
+    if(not wildcard) 
+        {
+        primelevel_ = strprimelevel;
+        }
+    else
+        {
+        if(strprimelevel > 0) Error("No primes before *");
+        primelevel_ += primeincrease;
+        }
+    return *this;
+    }
+
+Index
+rename(Index i, std::string const& s) 
+    { 
+    return i.rename(s);
+    }
+
+Index Index::
+operator()(std::string const& s)
+    {
+    auto i = *this;
+    return i.rename(s);
+    }
+
 Index::
 operator bool() const { return (id_!=0); }
 
@@ -135,6 +169,22 @@ Index& Index::
 prime(IndexType type, int inc)
     {
     if(type == this->type() || type == All)
+        {
+        primelevel_ += inc;
+#ifdef DEBUG
+        if(primelevel_ < 0)
+            {
+            Error("Increment led to negative primeLevel");
+            }
+#endif
+        }
+    return *this;
+    }
+
+Index& Index::
+prime(std::string const& str, int inc)
+    {
+    if(nameMatch(*this,str))
         {
         primelevel_ += inc;
 #ifdef DEBUG
@@ -205,10 +255,155 @@ read(std::istream& s)
     return *this;
     }
 
+/*
+void
+splitRawnamePrimelevel(std::string const& startstr, std::string & rawname, int & primelevel, bool & wildcard)
+    {
+    // Check if "*" is at the end
+    auto w = startstr.find("*");
+    auto N = startstr.length();
+    auto str = startstr;
+    if(w == std::string::npos)
+        {
+        wildcard = false;
+        }
+    else if(w == N-1)
+        {
+        wildcard = true;
+        str = startstr.substr(0,w);
+        N -= 1;
+        }
+    else
+        {
+        Error("* must be at the end");
+        }
+
+    auto i = str.find("'");
+    if(i == std::string::npos)
+        {
+        rawname = str.c_str();
+        primelevel = 0;
+        }
+    else
+        {
+        rawname = str.substr(0,i).c_str();
+        if(i == N-1)
+            {
+            primelevel = 1;
+            }
+        else
+            {
+            std::string matchstr(N-1-i, '\'');
+            auto endstr = str.substr(i+1,N);
+            if(matchstr == endstr)
+                {
+                primelevel = N-i;
+                }
+            else
+                {
+                primelevel = std::stoi(endstr);
+                }
+            }
+        }
+    }
+*/
+
+void
+analyzePrimeString(std::string const& str, int & primelevel)
+    {
+    auto N = str.length();
+    if(str.substr(0,1) != "'")
+        {
+        Error("Prime string must start with '");
+        }
+    else
+        {
+        if(N == 1)
+            {
+            primelevel = 1;
+            }
+        else
+            {
+            std::string matchstr(N-1, '\'');
+            auto endstr = str.substr(1,N);
+            if(matchstr == endstr)
+                {
+                primelevel = N;
+                }
+            else
+                {
+                primelevel = std::stoi(endstr);
+                }
+            }
+        }
+    }
+
+void
+splitRawnamePrimelevel(std::string const& startstr, std::string & rawname, 
+                       int & primelevel, bool & wildcard, int & primeincrease)
+    {
+    // Check location of "*"
+    auto w = startstr.find("*");
+    auto N = startstr.length();
+    auto str = startstr;
+    if(w == std::string::npos)
+        {
+        wildcard = false;
+        primeincrease = 0;
+        }
+    else if(w == N-1)
+        {
+        wildcard = true;
+        str = startstr.substr(0,w);
+        primeincrease = 0;
+        }
+    else
+        {
+        wildcard = true;
+        str = startstr.substr(0,w);
+        analyzePrimeString(startstr.substr(w+1,N), primeincrease);
+        }
+
+    N = str.length();
+    auto i = str.find("'");
+    if(i == std::string::npos)
+        {
+        rawname = str.c_str();
+        primelevel = 0;
+        }
+    else
+        {
+        rawname = str.substr(0,i).c_str();
+        analyzePrimeString(str.substr(i,N), primelevel);
+        }
+    }
+
+bool
+nameMatch(Index const& ind, std::string const& str)
+    {
+    auto rawname1 = ind.rawname();
+    auto primelevel1 = ind.primeLevel();
+
+    std::string rawname2;
+    int primelevel2;
+    bool wildcard2;
+    int primeincrease2;
+    splitRawnamePrimelevel(str, rawname2, primelevel2, wildcard2, primeincrease2);
+
+    if(wildcard2)
+        {
+        return (rawname1 == rawname2) && (primelevel1 >= primelevel2);
+        }
+    else
+        {
+        return (rawname1 == rawname2) && (primelevel1 == primelevel2);
+        }
+    }
+
 bool 
 operator==(Index const& i1, Index const& i2)
     { 
-    return (i1.id() == i2.id()) && (i1.primeLevel() == i2.primeLevel()); 
+    return (i1.id() == i2.id()) && (i1.primeLevel() == i2.primeLevel()) && (i1.rawname() == i2.rawname()); 
     }
 
 bool 

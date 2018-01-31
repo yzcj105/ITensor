@@ -48,7 +48,9 @@ namespace detail {
         private:
         result_type id = 0;
         };
+
     } //namespace detail
+
 
 //
 // Index
@@ -104,6 +106,14 @@ class Index
     std::string 
     name() const;
 
+    // Sets the name to a specified value.
+    Index& 
+    rename(std::string const& s);
+
+    // Sets the name to a specified value.
+    Index
+    operator()(std::string const& s);
+
     // Returns the name of this Index with primes removed
     std::string
     rawname() const { return std::string(name_.c_str()); }
@@ -133,6 +143,9 @@ class Index
     // if type matches this Index or type==All
     Index& 
     prime(IndexType type, int inc = 1);
+
+    Index& 
+    prime(std::string const& str, int inc = 1);
 
     // Set primelevel to zero (optionally only if type matches)
     Index& 
@@ -180,6 +193,23 @@ class Index
     generateID();
 
     }; //class Index
+
+//void
+//splitRawnamePrimelevel(std::string const& startstr, std::string & rawname, int & primelevel, bool & wildcard);
+
+void
+analyzePrimeString(std::string const& str, int & primelevel);
+
+void
+splitRawnamePrimelevel(std::string const& startstr, std::string & rawname, 
+                       int & primelevel, bool & wildcard, int & primeincrease);
+
+bool
+nameMatch(Index const& ind, std::string const& str);
+
+// Sets the name to a specified value.
+Index
+rename(Index i, std::string const& s);
 
 // i1 compares equal to i2 if i2 is a copy of i1 with same primelevel
 bool 

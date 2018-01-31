@@ -678,6 +678,23 @@ template<typename I>
 ITensorT<I>
 operator/(ITensorT<I> const& A, ITensorT<I> && B) { B /= A; return B; }
 
+template<typename IndexT>
+ITensorT<IndexT>
+rename(ITensorT<IndexT> A, 
+       std::string const& s1, std::string const& s2)
+    {
+    A.rename(s1,s2);
+    return A;
+    }
+
+template<typename IndexT>
+ITensorT<IndexT>
+trace(ITensorT<IndexT> A, 
+      std::string const& s1, std::string const& s2)
+    {
+    auto d = delta(A.index(s1),A.index(s2));
+    return A*d;
+    }
 
 template<typename IndexT, typename... VarArgs>
 ITensorT<IndexT>

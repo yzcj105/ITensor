@@ -138,6 +138,24 @@ class IndexSetT : public RangeT<index_type_>
         return operator[](I-1);
         }
 
+    // Access by name
+    index_type const&
+    index(std::string const& s) const
+        {
+        auto i = findindex(*this,s);
+        if(i == -1) throw ITError("Index with given name not found");
+        return parent::index(i);
+        }
+
+    // Change name of specified index
+    IndexSetT&
+    rename(std::string const& s1, std::string const& s2)
+        {
+        for(auto i = 0; i < parent::size(); i++) 
+            if(nameMatch(parent::index(i),s1)) parent::index(i).rename(s2);
+        return *this;
+        }
+
     parent const&
     range() const { return *this; }
 
@@ -193,6 +211,15 @@ auto
 rangeEnd(IndexSetT<index_type> const& is) -> decltype(is.range().end())
     {
     return is.range().end();
+    }
+
+// Change name of specified index
+template<typename IndexT>
+IndexSetT<IndexT>
+rename(IndexSetT<IndexT> is, std::string const& s1, std::string const& s2)
+    {
+    is.rename(s1,s2);
+    return is;
     }
 
 //
@@ -347,6 +374,11 @@ template <class IndexT>
 long
 findindex(IndexSetT<IndexT> const& iset, 
           IndexT const& I);
+
+template <class IndexT>
+long
+findindex(IndexSetT<IndexT> const& iset, 
+          std::string const& s);
 
 template <class IndexT>
 IndexT const&

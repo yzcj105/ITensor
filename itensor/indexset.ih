@@ -534,6 +534,18 @@ findindex(const IndexSetT<IndexT>& iset,
     }
 
 template <class IndexT>
+long
+findindex(const IndexSetT<IndexT>& iset, 
+          const std::string& s)
+    {
+    for(long j = 0; j < iset.r(); ++j)
+        {
+        if(iset[j].name() == s) return j;
+        }
+    return -1;
+    }
+
+template <class IndexT>
 const IndexT&
 findtype(const IndexSetT<IndexT>& iset, IndexType t)
 	{

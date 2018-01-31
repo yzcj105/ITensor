@@ -93,6 +93,10 @@ class ITensorT
     index_type const&
     index(size_type I) const { return is_.index(I); }
 
+    //Access index by name
+    index_type const&
+    index(std::string const& s) const { return is_.index(s); }
+
     //evaluates to false if default constructed
     explicit operator bool() const { return bool(is_) || bool(store_); }
 
@@ -132,6 +136,10 @@ class ITensorT
 
     void
     set(std::vector<int> const& ivs, Cplx val);
+
+    ITensorT& 
+    rename(std::string const& s1, std::string const& s2)
+        { is_.rename(s1,s2); return *this; }
 
     //
     // Index Prime Level Methods
@@ -348,6 +356,16 @@ ITensorT<typename std::common_type<IVal,IVals...>::type::index_type>
 setElt(IVal  const& iv1, 
        IVals const&... rest);
 
+
+template<typename IndexT>
+ITensorT<IndexT>
+rename(ITensorT<IndexT> A, 
+     std::string const& s1, std::string const& s2);
+
+template<typename IndexT>
+ITensorT<IndexT>
+trace(ITensorT<IndexT> A, 
+      std::string const& s1, std::string const& s2);
 
 //
 // ITensorT prime level functions
