@@ -540,7 +540,7 @@ findindex(const IndexSetT<IndexT>& iset,
     {
     for(long j = 0; j < iset.r(); ++j)
         {
-        if(iset[j].name() == s) return j;
+        if(nameMatch(iset[j],s)) return j;
         }
     return -1;
     }

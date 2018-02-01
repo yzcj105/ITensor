@@ -75,8 +75,18 @@ Index(const std::string& name, long m, IndexType type, int plev)
     if(type_ == All) Error("Constructing Index with type All disallowed");
     if(type_ == NullInd) Error("Constructing Index with type NullInd disallowed");
 #endif
+    std::string strname;
+    int strplev;
+    bool wildcard;
+    int strplevincrease;
+    splitRawnamePrimelevel(name, strname, strplev, wildcard, strplevincrease);
+    if(wildcard) Error("No * in name when constructing Index");
+    if(strplev != 0)
+        {
+        primelevel_ = strplev;
+        name_ = IndexName(strname.c_str());
+        }
     }
-
 
 Index& Index::
 primeLevel(int plev) 
@@ -254,59 +264,6 @@ read(std::istream& s)
 
     return *this;
     }
-
-/*
-void
-splitRawnamePrimelevel(std::string const& startstr, std::string & rawname, int & primelevel, bool & wildcard)
-    {
-    // Check if "*" is at the end
-    auto w = startstr.find("*");
-    auto N = startstr.length();
-    auto str = startstr;
-    if(w == std::string::npos)
-        {
-        wildcard = false;
-        }
-    else if(w == N-1)
-        {
-        wildcard = true;
-        str = startstr.substr(0,w);
-        N -= 1;
-        }
-    else
-        {
-        Error("* must be at the end");
-        }
-
-    auto i = str.find("'");
-    if(i == std::string::npos)
-        {
-        rawname = str.c_str();
-        primelevel = 0;
-        }
-    else
-        {
-        rawname = str.substr(0,i).c_str();
-        if(i == N-1)
-            {
-            primelevel = 1;
-            }
-        else
-            {
-            std::string matchstr(N-1-i, '\'');
-            auto endstr = str.substr(i+1,N);
-            if(matchstr == endstr)
-                {
-                primelevel = N-i;
-                }
-            else
-                {
-                primelevel = std::stoi(endstr);
-                }
-            }
-        }
-    }
-*/
 
 void
 analyzePrimeString(std::string const& str, int & primelevel)

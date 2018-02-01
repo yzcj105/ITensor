@@ -194,9 +194,6 @@ class Index
 
     }; //class Index
 
-//void
-//splitRawnamePrimelevel(std::string const& startstr, std::string & rawname, int & primelevel, bool & wildcard);
-
 void
 analyzePrimeString(std::string const& str, int & primelevel);
 
