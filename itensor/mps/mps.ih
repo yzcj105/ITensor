@@ -20,7 +20,7 @@ template <class Tensor>
 template <class BigMatrixT>
 Spectrum MPSt<Tensor>::
 svdBond(int b, const Tensor& AA, Direction dir, 
-        const BigMatrixT& PH, const Args& args)
+        const BigMatrixT& PH, Args args)
     {
     setBond(b);
     if(dir == Fromleft && b-1 > leftLim())
@@ -37,6 +37,9 @@ svdBond(int b, const Tensor& AA, Direction dir,
     auto noise = args.getReal("Noise",0.);
     auto cutoff = args.getReal("Cutoff",MIN_CUT);
     auto usesvd = args.getBool("UseSVD",false);
+
+    args.add("LeftIndexName",nameint(indexnames::BaseLink,b));
+    args.add("RightIndexName",nameint(indexnames::BaseLink,b));
 
     Spectrum res;
 
@@ -138,21 +141,27 @@ template <typename MPST>
 typename MPST::IndexT 
 linkInd(MPST const& psi, int b)
     { 
-    return commonIndex(psi.A(b),psi.A(b+1),Link); 
+    // TODO: make sure this does:
+    // commonIndex(psi.A(b),psi.A(b+1),Link);
+    return commonIndex(psi.A(b),psi.A(b+1));
     }
 
 template <typename MPST>
 typename MPST::IndexT 
 rightLinkInd(MPST const& psi, int i)
     { 
-    return commonIndex(psi.A(i),psi.A(i+1),Link); 
+    // TODO: make sure this does:
+    // commonIndex(psi.A(i),psi.A(i+1),Link);
+    return commonIndex(psi.A(i),psi.A(i+1));
     }
 
 template <typename MPST>
 typename MPST::IndexT 
 leftLinkInd(MPST const& psi, int i)
     { 
-    return commonIndex(psi.A(i),psi.A(i-1),Link); 
+    // TODO: make sure this does:
+    // commonIndex(psi.A(i),psi.A(i-1),Link);
+    return commonIndex(psi.A(i),psi.A(i-1));
     }
 
 template <typename MPST>
@@ -185,10 +194,11 @@ template <class Tensor>
 void 
 applyGate(Tensor const& gate, 
           MPSt<Tensor>& psi,
-          Args const& args)
+          Args args)
     {
     auto fromleft = args.getBool("Fromleft",true);
     const int c = psi.orthoCenter();
+
     Tensor AA = psi.A(c) * psi.A(c+1) * gate;
     AA.noprime();
     if(fromleft) psi.svdBond(c,AA,Fromleft,args);
@@ -264,7 +274,7 @@ overlapC(MPSType const& psi,
 
     for(decltype(N) i = 2; i < N; ++i) 
         { 
-        L = L * phi.A(i) * dag(prime(psi.A(i),Link)); 
+        L = L * phi.A(i) * dag(prime(psi.A(i)));
         }
     L = L * phi.A(N);
 

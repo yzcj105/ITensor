@@ -145,30 +145,11 @@ namespace detail {
         }
 } //namespace detail
 
-template<typename IndexT, typename... Types>
-void 
-prime(IndexSetT<IndexT>& is, 
-      IndexType type,
-      int inc)
-    {
-    for(auto& J : is) J.prime(type,inc);
-    }
-
 namespace detail {
 
 template<typename IndexT>
 struct IndexCmp
     {
-    bool
-    operator()(IndexT const& i, IndexType t) const
-        {
-        return i.type() == t;
-        }
-    bool
-    operator()(IndexType t, IndexT const& i) const
-        {
-        return i.type() == t;
-        }
     template<typename T1, typename T2>
     auto
     operator()(T1 const& i1, T2 const& i2) const
@@ -205,7 +186,7 @@ void
 prime(IndexSetT<IndexT>& is, 
       int inc) 
     { 
-    prime(is,All,inc); 
+    for(auto& J : is) J.prime(inc);
     }
 
 template<typename IndexT, typename... VArgs>
@@ -304,51 +285,15 @@ primeExcept(IndexSetT<IndexT>& is,
 #endif
     }
 
-template<typename IndexT, typename... ITs>
-void 
-primeExcept(IndexSetT<IndexT>& is, 
-            IndexType it1,
-            ITs&&... rest)
-    {
-    auto cmp = [](const IndexT& J, IndexType t) { return J.type()==t; };
-    for(auto& J : is)
-        {
-        auto match = detail::computeMatchInc(cmp,J,it1,std::forward<ITs>(rest)...);
-        if(!match) J.prime(match.inc);
-        }
-#ifdef DEBUG
-    detail::check(is);
-#endif
-    }
-
 template<typename IndexT>
 void 
-noprime(IndexSetT<IndexT>& is, 
-        IndexType type)
+noprime(IndexSetT<IndexT>& is)
     {
-    for(auto& J : is) J.noprime(type);
+    for(auto& J : is) J.noprime();
 #ifdef DEBUG
     detail::check(is);
 #endif
     }
-
-template<typename IndexT, typename... ITs>
-void 
-noprime(IndexSetT<IndexT>& is,
-        IndexType it1,
-        IndexType it2,
-        ITs&&... rest)
-    {
-    auto cmp = [](const IndexT& J, IndexType t) { return J.type()==t; };
-    for(auto& J : is)
-        {
-        auto found = detail::findMatch(cmp,J,it1,it2,std::forward<ITs>(rest)...);
-        if(found) J.noprime();
-        }
-#ifdef DEBUG
-    detail::check(is);
-#endif
-	}
 
 template<typename IndexT, typename... Inds>
 void 
@@ -374,12 +319,11 @@ template<typename IndexT>
 void 
 mapprime(IndexSetT<IndexT>& is, 
          int plevold, 
-         int plevnew, 
-         IndexType type)
+         int plevnew)
 	{
     for(auto& J : is) 
         {
-        J.mapprime(plevold,plevnew,type);
+        J.mapprime(plevold,plevnew);
         }
 #ifdef DEBUG
     detail::check(is);
@@ -394,14 +338,6 @@ namespace detail {
                IndexT const& I2)
         {
         return I1.noprimeEquals(I2);
-        }
-
-    template<typename IndexT>
-    bool
-    mp_matches(IndexT const& I1,
-               IndexType const& T)
-        {
-        return I1.type() == T;
         }
 
     template<typename IndexT,
@@ -455,20 +391,6 @@ mapprime(IndexSetT<IndexT>& is,
     detail::check(is);
 #endif
 	}
-
-template<typename IndexT>
-void 
-sim(IndexSetT<IndexT> & is, 
-    IndexType t)
-    {
-    for(auto n : range(is))
-        {
-        if(is[n].type() == t)
-            {
-            is[n] = sim(is[n]);
-            }
-        }
-    }
 
 template<typename IndexT>
 void 
@@ -545,18 +467,6 @@ findindex(const IndexSetT<IndexT>& iset,
     return -1;
     }
 
-template <class IndexT>
-const IndexT&
-findtype(const IndexSetT<IndexT>& iset, IndexType t)
-	{
-    for(auto& J : iset)
-        {
-        if(J.type() == t) return J;
-        }
-    Error("findtype failed."); 
-    return IndexT();
-	}
-
 ////
 //// Compute the permutation P taking an IndexSetT iset
 //// to oset (of type IndexSetT or array<IndexT,NMAX>)
@@ -610,18 +520,6 @@ hasindex(const IndexSetT<IndexT>& iset,
     for(long j = 0; j < iset.r(); ++j)
         {
         if(iset[j] == I) return true;
-        }
-    return false;
-	}
-
-template <class IndexT>
-bool
-hastype(const IndexSetT<IndexT>& iset, 
-        IndexType t)
-	{
-    for(const auto& J : iset)
-        {
-        if(J.type() == t) return true;
         }
     return false;
 	}

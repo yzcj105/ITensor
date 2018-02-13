@@ -90,9 +90,13 @@ class MPOt : private MPSt<Tensor>
         {
         for(int i = 1; i <= this->N(); i++)
             {
-            Anc(i).mapprime(0,1,Link);
-            Anc(i).mapprime(1,2,Site);
-            Anc(i).mapprime(0,1,Site);
+            // TODO: make sure these work like:
+            //Anc(i).mapprime(0,1,Link);
+            //Anc(i).mapprime(1,2,Site);
+            //Anc(i).mapprime(0,1,Site);
+            Anc(i).mapprime(0,1); //,Link);
+            Anc(i).mapprime(1,2); //,Site);
+            Anc(i).mapprime(0,1); //,Site);
             }
         }
 
@@ -105,7 +109,7 @@ class MPOt : private MPSt<Tensor>
     //Move the orthogonality center to site i 
     //(l_orth_lim_ = i-1, r_orth_lim_ = i+1)
     void 
-    position(int i, const Args& args = Args::global()) { Parent::position(i,args + Args("UseSVD")); }
+    position(int i, Args args = Args::global()) { Parent::position(i,args + Args("UseSVD")); }
 
     void 
     orthogonalize(Args const& args = Args::global()) 

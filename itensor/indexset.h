@@ -297,22 +297,9 @@ primeExcept(IndexSetT<IndexT>& is,
             IndexT const& I1, 
             Inds&&... inds);
 
-template<typename IndexT, typename... ITs>
-void 
-primeExcept(IndexSetT<IndexT>& is, 
-            IndexType it,
-            ITs&&... etc);
-
 template<typename IndexT>
 void 
-noprime(IndexSetT<IndexT>& is, IndexType type = All);
-
-template<typename IndexT, typename... ITs>
-void 
-noprime(IndexSetT<IndexT>& is,
-        IndexType it1,
-        IndexType it2,
-        ITs&&... rest);
+noprime(IndexSetT<IndexT>& is);
 
 template<typename IndexT, typename... Inds>
 void 
@@ -342,16 +329,7 @@ template<typename IndexT>
 void 
 mapprime(IndexSetT<IndexT>& is, 
          int plevold, 
-         int plevnew, 
-         IndexType type = All);
-
-//Replace all indices of type t by 'similar' indices 
-//with same properties but which don't compare equal 
-//to the indices they replace (using sim(IndexT) function)
-template<typename IndexT>
-void 
-sim(IndexSetT<IndexT> & is, 
-    IndexType t);
+         int plevnew);
 
 //Replace index I with a 'similar' index having same properties
 //but which does not compare equal to it (using sim(I) function)
@@ -382,11 +360,6 @@ findindex(IndexSetT<IndexT> const& iset,
 
 template <class IndexT>
 IndexT const&
-findtype(IndexSetT<IndexT> const& iset, 
-         IndexType t);
-
-template <class IndexT>
-IndexT const&
 finddir(IndexSetT<IndexT> const& iset, Arrow dir);
 
 template<class IndexT>
@@ -408,11 +381,6 @@ template <class IndexT>
 bool
 hasindex(IndexSetT<IndexT> const& iset, 
          IndexT const& I);
-
-template <class IndexT>
-bool
-hastype(IndexSetT<IndexT> const& iset, 
-        IndexType t);
 
 template <class IndexT>
 long

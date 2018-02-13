@@ -757,15 +757,6 @@ hasindex(const ITensorT<IndexT>& T, const typename ITensorT<IndexT>::index_type&
     return detail::contains(T.inds(),I);
     }
 
-template<typename IndexT>
-IndexT
-findtype(const ITensorT<IndexT>& T, IndexType type)
-    {
-    for(auto& i : T.inds())
-        if(i.type()==type) return i;
-    return IndexT{};
-    }
-
 template<typename IndexT,
          typename Cond>
 IndexT
@@ -782,8 +773,7 @@ findindex(ITensorT<IndexT> const& T,
 template<typename IndexT> 
 IndexT
 commonIndex(const ITensorT<IndexT>& A, 
-            const ITensorT<IndexT>& B, 
-            IndexType t);
+            const ITensorT<IndexT>& B);
 
 
 //Find index of tensor A (of optional type t) 
@@ -791,8 +781,7 @@ commonIndex(const ITensorT<IndexT>& A,
 template<typename IndexT> 
 IndexT
 uniqueIndex(const ITensorT<IndexT>& A, 
-            const ITensorT<IndexT>& B, 
-            IndexType t);
+            const ITensorT<IndexT>& B);
 
 //
 //Return copy of a tensor with primeLevels plev1 and plev2 swapped
@@ -805,8 +794,7 @@ template <typename IndexT>
 ITensorT<IndexT>
 swapPrime(ITensorT<IndexT> T, 
           int plev1, 
-          int plev2,
-          IndexType type);
+          int plev2);
 
 //Apply x = f(x) for each element x of T
 //and return the resulting tensor

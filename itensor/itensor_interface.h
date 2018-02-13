@@ -167,8 +167,8 @@ class ITensorT
 
     //Change all Indices having primeLevel plevold to have primeLevel plevnew
     ITensorT& 
-    mapprime(int plevold, int plevnew, IndexType type = All)
-        { itensor::mapprime(is_,plevold,plevnew,type); return *this; }
+    mapprime(int plevold, int plevnew)
+        { itensor::mapprime(is_,plevold,plevnew); return *this; }
 
     template<typename... VarArgs>
     ITensorT& 
@@ -404,10 +404,6 @@ template<typename IndexT>
 bool
 hasindex(const ITensorT<IndexT>& T, const typename ITensorT<IndexT>::index_type& I);
 
-template<typename IndexT>
-IndexT
-findtype(const ITensorT<IndexT>& T, IndexType type);
-
 template<typename IndexT,
          typename Cond>
 IndexT
@@ -418,8 +414,7 @@ findindex(ITensorT<IndexT> const& T, Cond && cond);
 template<typename IndexT> 
 IndexT
 commonIndex(const ITensorT<IndexT>& A, 
-            const ITensorT<IndexT>& B, 
-            IndexType t = All);
+            const ITensorT<IndexT>& B);
 
 
 //Find index of tensor A (of optional type t) 
@@ -427,8 +422,7 @@ commonIndex(const ITensorT<IndexT>& A,
 template<typename IndexT> 
 IndexT
 uniqueIndex(const ITensorT<IndexT>& A, 
-            const ITensorT<IndexT>& B, 
-            IndexType t);
+            const ITensorT<IndexT>& B);
 
 //
 //Return copy of a tensor with primeLevels plev1 and plev2 swapped
@@ -441,8 +435,7 @@ template <typename IndexT>
 ITensorT<IndexT>
 swapPrime(ITensorT<IndexT> T, 
           int plev1, 
-          int plev2,
-          IndexType type = All);
+          int plev2);
 
 //Apply x = f(x) for each element x of T
 //and return the resulting tensor

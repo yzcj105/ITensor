@@ -242,7 +242,7 @@ SiteSet(int N, int d)
     for(int j = 1; j <= N; ++j)
         {
         auto I = IQIndex(format("Site %d",j),
-                         Index(format("site %d",j),d,Site),QN());
+                         Index(format("site %d",j),d),QN());
         sites.set(j,GenericSite(I));
         }
     SiteSet::init(std::move(sites));

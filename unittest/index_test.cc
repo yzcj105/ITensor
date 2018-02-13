@@ -58,16 +58,14 @@ TEST_CASE("IndexTest")
 
     SECTION("sim function")
         {
-        auto i = Index("i",4,Atype);
+        auto i = Index("i",4);
 
         auto i1 = sim(i);
         CHECK(i1.m() == i.m());
-        CHECK(i1.type() == i.type());
         CHECK(i1.primeLevel() == 0);
 
         auto i2 = sim(prime(i,3));
         CHECK(i2.m() == i.m());
-        CHECK(i2.type() == i.type());
         CHECK(i2.primeLevel() == 0);
         }
     }

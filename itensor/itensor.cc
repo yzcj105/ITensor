@@ -153,8 +153,7 @@ combiner(std::vector<Index> inds, Args const& args)
         }
     //create combined index
     auto cname = args.getString("IndexName","cmb");
-    auto itype = getIndexType(args,"IndexType",Link);
-    inds.front() = Index(cname,rm,itype);
+    inds.front() = Index(cname,rm);
     return ITensor(IndexSet(std::move(inds)),Combiner{});
     }
 

@@ -112,7 +112,7 @@ class MPSt
            Args const& args = Args::global());
 
     void 
-    mapprime(int oldp, int newp, IndexType type = All);
+    mapprime(int oldp, int newp);
 
     void 
     primelinks(int oldp, int newp);
@@ -124,7 +124,7 @@ class MPSt
     svdBond(int b, 
             Tensor const& AA, 
             Direction dir, 
-            Args const& args = Args::global());
+            Args args = Args::global());
 
     template<class LocalOpT>
     Spectrum 
@@ -132,12 +132,12 @@ class MPSt
             Tensor const& AA, 
             Direction dir, 
             LocalOpT const& PH, 
-            Args const& args = Args::global());
+            Args args = Args::global());
 
     //Move the orthogonality center to site i 
     //(leftLim() == i-1, rightLim() == i+1, orthoCenter() == i)
     void 
-    position(int i, Args const& args = Args::global());
+    position(int i, Args args = Args::global());
 
     void 
     orthogonalize(Args const& args = Args::global());
@@ -396,7 +396,7 @@ template <class Tensor>
 void 
 applyGate(const Tensor& gate, 
           MPSt<Tensor>& psi,
-          const Args& args = Args::global());
+          Args args = Args::global());
 
 //Checks if A_[i] is left (left == true) 
 //or right (left == false) orthogonalized

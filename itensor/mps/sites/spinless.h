@@ -26,9 +26,9 @@ class SpinlessSite
         auto conserve_Nf = args.getBool("ConserveNf",true);
         auto q_occ = QN("Nf=",1);
         if(not conserve_Nf) q_occ = QN("Pf=",1);
-        s = IQIndex{nameint("Spinless ",n),
-            Index(nameint("Emp ",n),1,Site),QN(),
-            Index(nameint("Occ ",n),1,Site),q_occ};
+        s = IQIndex{nameint(indexnames::BaseSite,n),
+            Index(nameint("Emp ",n),1),QN(),
+            Index(nameint("Occ ",n),1),q_occ};
         }
 
     IQIndex

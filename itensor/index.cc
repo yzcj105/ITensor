@@ -29,9 +29,9 @@ putprimes(string s, int plev)
     }
 
 string 
-nameindex(const IndexType& it, int plev)
+nameindex(int plev)
     { 
-    return putprimes(it.c_str(),plev); 
+    return putprimes("",plev);
     }
 
 string 
@@ -58,23 +58,17 @@ Index()
     : 
     id_(0),
     primelevel_(0),
-    m_(1),
-    type_(NullInd)
+    m_(1)
     { }
 
 Index::
-Index(const std::string& name, long m, IndexType type, int plev) 
+Index(const std::string& name, long m, int plev)
     : 
     id_(generateID()),
     primelevel_(plev),
     m_(m),
-    type_(type),
     name_(name.c_str())
     { 
-#ifdef DEBUG
-    if(type_ == All) Error("Constructing Index with type All disallowed");
-    if(type_ == NullInd) Error("Constructing Index with type NullInd disallowed");
-#endif
     std::string strname;
     int strplev;
     bool wildcard;
@@ -156,35 +150,15 @@ operator bool() const { return (id_!=0); }
 
 
 Index& Index::
-mapprime(int plevold, int plevnew, IndexType type)
+mapprime(int plevold, int plevnew)
     {
     if(primelevel_ == plevold)
         {
-        if(type == All || type == this->type())
-            {
-            primelevel_ = plevnew;
-#ifdef DEBUG
-            if(primelevel_ < 0)
-                {
-                Error("Negative primeLevel");
-                }
-#endif
-            }
-        }
-    return *this;
-    }
-
-
-Index& Index::
-prime(IndexType type, int inc)
-    {
-    if(type == this->type() || type == All)
-        {
-        primelevel_ += inc;
+        primelevel_ = plevnew;
 #ifdef DEBUG
         if(primelevel_ < 0)
             {
-            Error("Increment led to negative primeLevel");
+            Error("Negative primeLevel");
             }
 #endif
         }
@@ -233,7 +207,6 @@ write(std::ostream& s) const
     { 
     if(!bool(*this)) Error("Index::write: Index is default initialized");
     itensor::write(s,primelevel_);
-    itensor::write(s,type_);
     itensor::write(s,id_);
     itensor::write(s,m_);
     itensor::write(s,name_);
@@ -243,7 +216,6 @@ Index& Index::
 read(std::istream& s)
     {
     itensor::read(s,primelevel_);
-    itensor::read(s,type_);
     if(Global::read32BitIDs())
         {
         using ID32 = std::mt19937::result_type;
@@ -399,7 +371,6 @@ operator<<(std::ostream & s, Index const& t)
     {
     s << "(\"" << t.rawname();
     s << "\"," << t.m();
-    s << "," << t.type().c_str();
     if(Global::showIDs()) 
         {
         s << "|" << (t.id() % 1000);
@@ -472,7 +443,7 @@ operator==(IndexVal const& iv, Index const& I)
 Index
 sim(Index const& I, int plev)
     {
-    return Index("~"+I.rawname(),I.m(),I.type(),plev);
+    return Index("~"+I.rawname(),I.m(),plev);
     }
 
 string
@@ -484,31 +455,6 @@ operator<<(std::ostream& s, IndexVal const& iv)
     { 
     return s << "IndexVal: val = " << iv.val 
              << ", ind = " << iv.index;
-    }
-
-void
-add(Args            & args, 
-    Args::Name const& name, 
-    IndexType         it) 
-    { 
-    args.add(name,it.c_str()); 
-    }
-
-IndexType
-getIndexType(Args       const& args, 
-             Args::Name const& name)
-    {
-    if(!args.defined(name)) Error(format("Name %s not found in Args",name));
-    return IndexType(args.getString(name).c_str());
-    }
-
-IndexType
-getIndexType(const Args& args, 
-             const Args::Name& name, 
-             IndexType default_val)
-    {
-    if(!args.defined(name)) return default_val; 
-    return IndexType(args.getString(name).c_str());
     }
 
 } //namespace itensor

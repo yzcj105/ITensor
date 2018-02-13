@@ -212,15 +212,17 @@ read(std::istream & s)
         }
     //Check that tensors read from disk were constructed
     //using the same sites
-    auto s1 = findtype(A_.at(1),Site);
-    s1.noprime();
-    if(sites_ && s1 != IndexT(sites_(1)))
-        {
-        Print(A_.at(1).inds());
-        Print(s1);
-        Print(IndexT(sites_(1)));
-        Error("Tensors read from disk not compatible with SiteSet passed to constructor.");
-        }
+    // TODO: check the sites are correct
+    //auto s1 = findtype(A_.at(1),Site);
+    //s1.noprime();
+    //if(sites_ && s1 != IndexT(sites_(1)))
+    //    {
+    //    Print(A_.at(1).inds());
+    //    Print(s1);
+    //    Print(IndexT(sites_(1)));
+    //    Error("Tensors read from disk not compatible with SiteSet passed to constructor.");
+    //    }
+
     itensor::read(s,l_orth_lim_);
     itensor::read(s,r_orth_lim_);
     }
@@ -406,7 +408,7 @@ new_tensors(std::vector<ITensor>& A_)
     std::vector<Index> a(N_+1);
     for(int i = 1; i <= N_; ++i)
         { 
-        a[i] = Index(nameint("a",i)); 
+        a[i] = Index(nameint(indexnames::BaseLink,i));
         }
     A_[1] = ITensor(sites()(1),a[1]);
     for(int i = 2; i < N_; i++)
@@ -472,7 +474,7 @@ init_tensors(std::vector<IQTensor>& A_, const InitState& initState)
     auto a = std::vector<IQIndex>(N_+1);
     for(auto i : range1(N_))
         { 
-        a[i] = IQIndex(nameint("L",i),Index(nameint("l",i)),qa[i]); 
+        a[i] = IQIndex(nameint(indexnames::BaseLink,i),Index(nameint("l",i)),qa[i]);
         }
 
     A_[1] = setElt(initState(1),a[1](1));
@@ -610,17 +612,17 @@ plusEq(const MPSt<IQTensor>& R, const Args& args);
 
 template <class Tensor>
 void MPSt<Tensor>::
-mapprime(int oldp, int newp, IndexType type)
+mapprime(int oldp, int newp)
     { 
     if(do_write_)
         Error("mapprime not supported if doWrite(true)");
     for(int i = 1; i <= N_; ++i) 
-        A_[i].mapprime(oldp,newp,type); 
+        A_[i].mapprime(oldp,newp); 
     }
 template
-void MPSt<ITensor>::mapprime(int oldp, int newp, IndexType type);
+void MPSt<ITensor>::mapprime(int oldp, int newp);
 template
-void MPSt<IQTensor>::mapprime(int oldp, int newp, IndexType type);
+void MPSt<IQTensor>::mapprime(int oldp, int newp);
 
 template <class Tensor>
 void MPSt<Tensor>::
@@ -628,8 +630,11 @@ primelinks(int oldp, int newp)
     { 
     if(do_write_)
         Error("primelinks not supported if doWrite(true)");
-    for(int i = 1; i <= N_; ++i) 
-        A_[i].mapprime(oldp,newp,Link); 
+    for(int i = 1; i <= N_; ++i)
+        // TODO: make sure this does:
+        // A_[i].mapprime(oldp,newp,Link);
+        // i.e. with A_[i].mapprime(oldp,newp,"l#");
+        A_[i].mapprime(oldp,newp);
     }
 template
 void MPSt<ITensor>::primelinks(int oldp, int newp);
@@ -643,7 +648,10 @@ noprimelink()
     if(do_write_)
         Error("noprimelink not supported if doWrite(true)");
     for(int i = 1; i <= N_; ++i) 
-        A_[i].noprime(Link); 
+        // TODO: make sure this does:
+        // A_[i].noprime(Link);
+        // i.e. with A_[i].noprime("l#");
+        A_[i].noprime(); 
     }
 template
 void MPSt<ITensor>::noprimelink();
@@ -652,14 +660,14 @@ void MPSt<IQTensor>::noprimelink();
 
 template<class Tensor> 
 Spectrum MPSt<Tensor>::
-svdBond(int b, const Tensor& AA, Direction dir, const Args& args)
+svdBond(int b, const Tensor& AA, Direction dir, Args args)
     {
     return svdBond(b,AA,dir,LocalOp<Tensor>(),args);
     }
 template Spectrum MPSt<ITensor>::
-svdBond(int b, const ITensor& AA, Direction dir, const Args& args);
+svdBond(int b, const ITensor& AA, Direction dir, Args args);
 template Spectrum MPSt<IQTensor>::
-svdBond(int b, const IQTensor& AA, Direction dir, const Args& args);
+svdBond(int b, const IQTensor& AA, Direction dir, Args args);
 
 
 struct SqrtInv
@@ -685,7 +693,9 @@ orthMPS(Tensor& A1, Tensor& A2, Direction dir, const Args& args)
     Tensor& L = (dir == Fromleft ? A1 : A2);
     Tensor& R = (dir == Fromleft ? A2 : A1);
 
-    auto bnd = commonIndex(L,R,Link);
+    // TODO: make sure this does:
+    // auto bnd = commonIndex(L,R,Link);
+    auto bnd = commonIndex(L,R);
     if(!bnd) return Spectrum();
 
     if(args.getBool("Verbose",false))
@@ -710,7 +720,7 @@ orthMPS(IQTensor& A1, IQTensor& A2, Direction dir, const Args& args);
 
 template<class Tensor> 
 void MPSt<Tensor>::
-position(int i, Args const& args)
+position(int i, Args args)
     {
     if(not *this) Error("position: MPS is default constructed");
 
@@ -721,6 +731,8 @@ position(int i, Args const& args)
             if(l_orth_lim_ < 0) l_orth_lim_ = 0;
             setBond(l_orth_lim_+1);
             auto WF = A(l_orth_lim_+1) * A(l_orth_lim_+2);
+            args.add("LeftIndexName",nameint(indexnames::BaseLink,l_orth_lim_+1));
+            args.add("RightIndexName",nameint(indexnames::BaseLink,l_orth_lim_+1));
             svdBond(l_orth_lim_+1,WF,Fromleft,args);
             }
         while(r_orth_lim_ > i+1)
@@ -728,6 +740,8 @@ position(int i, Args const& args)
             if(r_orth_lim_ > N_+1) r_orth_lim_ = N_+1;
             setBond(r_orth_lim_-2);
             auto WF = A(r_orth_lim_-2) * A(r_orth_lim_-1);
+            args.add("LeftIndexName",nameint(indexnames::BaseLink,r_orth_lim_-2));
+            args.add("RightIndexName",nameint(indexnames::BaseLink,r_orth_lim_-2));
             svdBond(r_orth_lim_-2,WF,Fromright,args);
             }
         }
@@ -737,6 +751,8 @@ position(int i, Args const& args)
             {
             if(l_orth_lim_ < 0) l_orth_lim_ = 0;
             setBond(l_orth_lim_+1);
+            args.add("LeftIndexName",nameint(indexnames::BaseLink,l_orth_lim_+1));
+            args.add("RightIndexName",nameint(indexnames::BaseLink,l_orth_lim_+1));
             orthMPS(Aref(l_orth_lim_+1),Aref(l_orth_lim_+2),Fromleft,args);
             ++l_orth_lim_;
             if(r_orth_lim_ < l_orth_lim_+2) r_orth_lim_ = l_orth_lim_+2;
@@ -745,6 +761,8 @@ position(int i, Args const& args)
             {
             if(r_orth_lim_ > N_+1) r_orth_lim_ = N_+1;
             setBond(r_orth_lim_-2);
+            args.add("LeftIndexName",nameint(indexnames::BaseLink,r_orth_lim_-2));
+            args.add("RightIndexName",nameint(indexnames::BaseLink,r_orth_lim_-2));
             orthMPS(Aref(r_orth_lim_-2),Aref(r_orth_lim_-1),Fromright,args);
             --r_orth_lim_;
             if(l_orth_lim_ > r_orth_lim_-2) l_orth_lim_ = r_orth_lim_-2;
@@ -752,9 +770,9 @@ position(int i, Args const& args)
         }
     }
 template void MPSt<ITensor>::
-position(int b, const Args& args);
+position(int b, Args args);
 template void MPSt<IQTensor>::
-position(int b, const Args& args);
+position(int b, Args args);
 
 template <class Tensor>
 int MPSt<Tensor>::
@@ -783,16 +801,21 @@ orthogonalize(Args const& args)
 
     //Build environment tensors from the left
     auto E = vector<Tensor>(N_+1);
-    auto ci = commonIndex(A_.at(1),A_.at(2),Link);
+    // TODO: make sure this does:
+    // auto ci = commonIndex(A_.at(1),A_.at(2),Link);
+    // i.e. auto ci = A_.at(1).index("l1");
+    auto ci = commonIndex(A_.at(1),A_.at(2));
     E.at(1) = A_.at(1)*dag(prime(A_.at(1),ci,plev));
     for(int j = 2; j < N_; ++j)
         {
-        E.at(j) = E.at(j-1) * A_.at(j) * dag(prime(A_.at(j),Link,plev));
+        // TODO: make sure this does:
+        // E.at(j) = E.at(j-1) * A_.at(j) * dag(prime(A_.at(j),Link,plev));
+        E.at(j) = E.at(j-1) * A_.at(j) * dag(prime(A_.at(j),plev));
         }
 
     auto rho = E.at(N_-1) * A_.at(N_) * dag(prime(A_.at(N_),plev));
     Tensor U,D;
-    diagHermitian(rho,U,D,{dargs,"IndexType=",Link});
+    diagHermitian(rho,U,D);
 
     //O is partial overlap of previous and new MPS
     auto O = U * A_.at(N_) * A_.at(N_-1);
@@ -809,7 +832,7 @@ orthogonalize(Args const& args)
             dargs.add("Maxm",maxm);
             }
         rho = E.at(j-1) * O * dag(prime(O,plev));
-        auto spec = diagHermitian(rho,U,D,{dargs,"IndexType=",Link});
+        auto spec = diagHermitian(rho,U,D);
         O *= U;
         O *= A_.at(j-1);
         A_.at(j) = dag(U);

@@ -246,7 +246,7 @@ factor(Tensor const& T,
        Tensor      & B,
        Args const& args)
     {
-    auto name = args.getString("IndexName","c");
+    auto name = args.getString("IndexName","u");
     Tensor D;
     auto spec = svd(T,A,D,B,{args,"LeftIndexName=",name});
     auto dl = commonIndex(A,D);
@@ -296,7 +296,7 @@ eigDecompImpl(ITensor T,
         eigDecomp(MM,Lr,Li,Dr,Di,Rr,Ri);
         }
 
-    auto newmid = Index("C",lind.m(),lind.type());
+    auto newmid = Index("u",lind.m());
 
     //put right eigenvectors into an ITensor
     if(norm(Ri) > 1E-16*norm(Rr))

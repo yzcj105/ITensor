@@ -182,7 +182,8 @@ findCenter(const IQMPO& psi)
         for(const IQIndex& I : A.inds())
             {
             //Only look at Link IQIndices
-            if(I.type() != Link) continue;
+            // TODO: make sure to add something that does:
+            //if(I.type() != Link) continue;
 
             if(I.dir() != Out)
                 {
@@ -566,7 +567,9 @@ checkMPOProd(MPSt<Tensor> const& psi2,
     auto Kd = K;
     for(auto j : range1(K.N()))
         {
-        Kd.Aref(j) = dag(swapPrime(K.A(j),0,1,Site));
+        // TODO: make sure this line works like:
+        // Kd.Aref(j) = dag(swapPrime(K.A(j),0,1,Site));
+        Kd.Aref(j) = dag(swapPrime(K.A(j),0,1));
         }
     res += overlap(psi1,Kd,K,psi1);
     return res;

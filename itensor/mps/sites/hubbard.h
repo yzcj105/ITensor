@@ -29,21 +29,21 @@ class HubbardSite
             Dn = -Up;
         if(conserveNf)
             {
-            s = IQIndex{nameint("site=",n),
-                    Index(nameint("Emp ",n),1,Site), QN("Sz=", 0,"Nf=",0),
-                    Index(nameint("Up ",n),1,Site),  QN("Sz=",Up,"Nf=",1),
-                    Index(nameint("Dn ",n),1,Site),  QN("Sz=",Dn,"Nf=",1),
-                    Index(nameint("UpDn ",n),1,Site),QN("Sz=", 0,"Nf=",2)};
+            s = IQIndex{nameint(indexnames::BaseSite,n),
+                    Index(nameint("Emp ",n),1), QN("Sz=", 0,"Nf=",0),
+                    Index(nameint("Up ",n),1),  QN("Sz=",Up,"Nf=",1),
+                    Index(nameint("Dn ",n),1),  QN("Sz=",Dn,"Nf=",1),
+                    Index(nameint("UpDn ",n),1),QN("Sz=", 0,"Nf=",2)};
             }
         else //don't conserve Nf, only fermion parity
             {
             if(!conserveSz) Error("One of ConserveSz or ConserveNf must be true for Hubbard sites");
 
-             s = IQIndex{nameint("site=",n),
-                    Index(nameint("Emp ",n),1,Site), QN("Sz=", 0,"Pf=",0),
-                    Index(nameint("Up ",n),1,Site),  QN("Sz=",+1,"Pf=",1),
-                    Index(nameint("Dn ",n),1,Site),  QN("Sz=",-1,"Pf=",1),
-                    Index(nameint("UpDn ",n),1,Site),QN("Sz=", 0,"Pf=",0)};
+             s = IQIndex{nameint(indexnames::BaseSite,n),
+                    Index(nameint("Emp ",n),1), QN("Sz=", 0,"Pf=",0),
+                    Index(nameint("Up ",n),1),  QN("Sz=",+1,"Pf=",1),
+                    Index(nameint("Dn ",n),1),  QN("Sz=",-1,"Pf=",1),
+                    Index(nameint("UpDn ",n),1),QN("Sz=", 0,"Pf=",0)};
             }
         }
 

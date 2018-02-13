@@ -226,7 +226,7 @@ svd(Tensor AA,
              maxm = MAX_M;
         if(D.r() == 0)
             {
-            auto mid = commonIndex(U,V,Link);
+            auto mid = commonIndex(U,V);
             if(mid) minm = maxm = mid.m();
             else    minm = maxm = 1;
             }
@@ -262,7 +262,7 @@ denmatDecomp(Tensor const& AA,
 
     auto noise = args.getReal("Noise",0.);
 
-    auto mid = commonIndex(A,B,Link);
+    auto mid = commonIndex(A,B);
 
     //If dir==NoDir, put the O.C. on the side
     //that keeps mid's arrow the same
@@ -345,7 +345,7 @@ diagHermitian(ITensorT<I> const& M,
               ITensorT<I>      & D,
               Args args)
     {
-    if(!args.defined("IndexName")) args.add("IndexName","d");
+    if(!args.defined("IndexName")) args.add("IndexName","u");
 
     //
     // Pick an arbitrary index and do some analysis

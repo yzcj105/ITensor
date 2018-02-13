@@ -23,14 +23,6 @@ totalM(IQIndex::storage const& storage)
     for(auto& iq : storage)
         {
         tm += iq.index.m();
-#ifdef DEBUG
-        if(iq.index.type() != storage.front().type())
-            {
-            Print(iq.index.type());
-            Print(storage.front().type());
-            Error("Indices must have the same type");
-            }
-#endif
         }
     return tm;
     }
@@ -136,7 +128,7 @@ IQIndex(std::string const& name,
         storage && ind_qn, 
         Arrow dir, 
         int plev) 
-  : Index(name,totalM(ind_qn),ind_qn.front().index.type(),plev),
+  : Index(name,totalM(ind_qn),plev),
     dir_(dir)
     { 
     makeStorage(std::move(ind_qn));
@@ -148,7 +140,7 @@ IQIndex(storage_ptr const& p,
         std::string const& name, 
         Arrow dir,
         int plev)
-  : Index(name,totalM(p->store()),p->store().front().index.type(),plev),
+  : Index(name,totalM(p->store()),plev),
     pd(p),
     dir_(dir)
     {
@@ -425,23 +417,16 @@ prime(int inc)
     }
 
 IQIndexVal&  IQIndexVal::
-prime(IndexType type, int inc)
+noprime()
     {
-    index.prime(type,inc);
+    index.noprime();
     return *this;
     }
 
 IQIndexVal&  IQIndexVal::
-noprime(IndexType type)
+mapprime(int plevold, int plevnew)
     {
-    index.noprime(type);
-    return *this;
-    }
-
-IQIndexVal&  IQIndexVal::
-mapprime(int plevold, int plevnew, IndexType type)
-    {
-    index.mapprime(plevold,plevnew,type);
+    index.mapprime(plevold,plevnew);
     return *this;
     }
 

@@ -106,7 +106,7 @@ diagHImpl(ITensor H,
         showEigs(DD,truncerr,sqrt(H.scale()),showargs);
         }
 
-    auto newmid = Index(iname,m,active.type());
+    auto newmid = Index(iname,m);
 
     U = ITensor({active,newmid},Dense<T>{move(UU.storage())}); 
     D = ITensor({prime(newmid,pdiff),newmid},DiagReal{DD.begin(),DD.end()},H.scale());

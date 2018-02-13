@@ -37,6 +37,7 @@ class LocalOp
     Tensor const* Op2_;
     Tensor const* L_;
     Tensor const* R_;
+    int b_;
     mutable long size_;
     public:
 
@@ -53,9 +54,21 @@ class LocalOp
             Args const& args = Global::args());
 
     LocalOp(Tensor const& Op1, 
+            Tensor const& Op2,
+            int b,
+            Args const& args = Global::args());
+
+    LocalOp(Tensor const& Op1, 
             Tensor const& Op2, 
             Tensor const& L, 
             Tensor const& R,
+            Args const& args = Global::args());
+
+    LocalOp(Tensor const& Op1, 
+            Tensor const& Op2, 
+            Tensor const& L, 
+            Tensor const& R,
+            int b,
             Args const& args = Global::args());
 
     //
@@ -87,10 +100,20 @@ class LocalOp
     update(Tensor const& Op1, Tensor const& Op2);
 
     void
+    update(Tensor const& Op1, Tensor const& Op2, int b);
+
+    void
     update(Tensor const& Op1, 
            Tensor const& Op2, 
            Tensor const& L, 
            Tensor const& R);
+
+    void
+    update(Tensor const& Op1, 
+           Tensor const& Op2, 
+           Tensor const& L, 
+           Tensor const& R,
+           int b);
 
     Tensor const&
     Op1() const 
@@ -120,6 +143,9 @@ class LocalOp
         return *R_;
         }
 
+    int
+    b() { return b_; }
+
     explicit operator bool() const { return bool(Op1_); }
 
     bool
@@ -138,6 +164,7 @@ LocalOp()
     Op2_(nullptr),
     L_(nullptr),
     R_(nullptr),
+    b_(-1),
     size_(-1)
     { 
     }
@@ -151,9 +178,25 @@ LocalOp(const Tensor& Op1, const Tensor& Op2,
     Op2_(nullptr),
     L_(nullptr),
     R_(nullptr),
+    b_(-1),
     size_(-1)
     {
     update(Op1,Op2);
+    }
+
+template <class Tensor>
+inline LocalOp<Tensor>::
+LocalOp(const Tensor& Op1, const Tensor& Op2,
+        int b, const Args& args)
+    : 
+    Op1_(nullptr),
+    Op2_(nullptr),
+    L_(nullptr),
+    R_(nullptr),
+    b_(-1),
+    size_(-1)
+    {
+    update(Op1,Op2,b);
     }
 
 template <class Tensor>
@@ -166,9 +209,26 @@ LocalOp(const Tensor& Op1, const Tensor& Op2,
     Op2_(nullptr),
     L_(nullptr),
     R_(nullptr),
+    b_(-1),
     size_(-1)
     {
     update(Op1,Op2,L,R);
+    }
+
+template <class Tensor>
+inline LocalOp<Tensor>::
+LocalOp(const Tensor& Op1, const Tensor& Op2, 
+        const Tensor& L, const Tensor& R,
+        int b, const Args& args)
+    : 
+    Op1_(nullptr),
+    Op2_(nullptr),
+    L_(nullptr),
+    R_(nullptr),
+    b_(-1),
+    size_(-1)
+    {
+    update(Op1,Op2,L,R,b);
     }
 
 template <class Tensor>
@@ -184,10 +244,32 @@ update(const Tensor& Op1, const Tensor& Op2)
 
 template <class Tensor>
 void inline LocalOp<Tensor>::
+update(const Tensor& Op1, const Tensor& Op2, int b)
+    {
+    Op1_ = &Op1;
+    Op2_ = &Op2;
+    L_ = nullptr;
+    R_ = nullptr;
+    b_ = b;
+    size_ = -1;
+    }
+
+template <class Tensor>
+void inline LocalOp<Tensor>::
 update(const Tensor& Op1, const Tensor& Op2, 
        const Tensor& L, const Tensor& R)
     {
     update(Op1,Op2);
+    L_ = &L;
+    R_ = &R;
+    }
+
+template <class Tensor>
+void inline LocalOp<Tensor>::
+update(const Tensor& Op1, const Tensor& Op2, 
+       const Tensor& L, const Tensor& R, int b)
+    {
+    update(Op1,Op2,b);
     L_ = &L;
     R_ = &R;
     }
@@ -302,11 +384,15 @@ diag() const
         return IndexT();
         };
 
-    auto toTie = noprime(findtype(Op1,Site));
+    // TODO: make this the same as:
+    // auto toTie = noprime(findtype(Op1,Site));
+    auto toTie = noprime(Op1.index(1));
     auto Diag = Op1 * delta(toTie,prime(toTie),prime(toTie,2));
     Diag.noprime();
 
-    toTie = noprime(findtype(Op2,Site));
+    // TODO: make this the same as:
+    // toTie = noprime(findtype(Op2,Site));
+    toTie = noprime(Op2.index(1));
     auto Diag2 = Op2 * delta(toTie,prime(toTie),prime(toTie,2));
     Diag *= noprime(Diag2);
 
@@ -377,9 +463,8 @@ size() const
                     }
                 }
             }
-
-        size_ *= findtype(*Op1_,Site).m();
-        size_ *= findtype(*Op2_,Site).m();
+        size_ *= Op1_->index(nameint(indexnames::BaseSite,b_)).m();
+        size_ *= Op2_->index(nameint(indexnames::BaseSite,b_+1)).m();
         }
     return size_;
     }

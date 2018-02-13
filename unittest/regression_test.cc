@@ -15,8 +15,8 @@ using namespace std;
 
 TEST_CASE("ITensor Times IQIndexVal")
     {
-    IQIndex s("S",Index("up",1,Site),QN(+1),
-                  Index("dn",1,Site),QN(-1));
+    IQIndex s("S",Index("up",1),QN(+1),
+                  Index("dn",1),QN(-1));
 
     Index l("l",4);
     ITensor T(l);
@@ -33,8 +33,8 @@ TEST_CASE("ITensor Times IQIndexVal")
 
 TEST_CASE("ITensor from IQIndexVal")
     {
-    IQIndex s("S",Index("up",1,Site),QN(+1),
-                  Index("dn",1,Site),QN(-1));
+    IQIndex s("S",Index("up",1),QN(+1),
+                  Index("dn",1),QN(-1));
 
     auto T1 = setElt(s(1));
     CHECK(T1.real(s(1)) == 1);

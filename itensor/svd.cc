@@ -44,11 +44,8 @@ svdImpl(ITensor const& A,
     auto minm = args.getInt("Minm",1);
     auto doRelCutoff = args.getBool("DoRelCutoff",true);
     auto absoluteCutoff = args.getBool("AbsoluteCutoff",false);
-    auto lname = args.getString("LeftIndexName","ul");
-    auto rname = args.getString("RightIndexName","vl");
-    auto itype = getIndexType(args,"IndexType",Link);
-    auto litype = getIndexType(args,"LeftIndexType",itype);
-    auto ritype = getIndexType(args,"RightIndexType",itype);
+    auto lname = args.getString("LeftIndexName","u");
+    auto rname = args.getString("RightIndexName","v");
     auto show_eigs = args.getBool("ShowEigs",false);
 
     auto M = toMatRefc<T>(A,ui,vi);
@@ -100,8 +97,8 @@ svdImpl(ITensor const& A,
         showEigs(probs,truncerr,A.scale(),showargs);
         }
     
-    Index uL(lname,m,litype),
-          vL(rname,m,ritype);
+    Index uL(lname,m),
+          vL(rname,m);
 
     //Fix sign to make sure D has positive elements
     Real signfix = (A.scale().sign() == -1) ? -1 : +1;
@@ -149,11 +146,8 @@ svdImpl(IQTensor A,
     auto doRelCutoff = args.getBool("DoRelCutoff",true);
     auto absoluteCutoff = args.getBool("AbsoluteCutoff",false);
     auto show_eigs = args.getBool("ShowEigs",false);
-    auto lname = args.getString("LeftIndexName","ul");
-    auto rname = args.getString("RightIndexName","vl");
-    auto itype = getIndexType(args,"IndexType",Link);
-    auto litype = getIndexType(args,"LeftIndexType",itype);
-    auto ritype = getIndexType(args,"RightIndexType",itype);
+    auto lname = args.getString("LeftIndexName","u");
+    auto rname = args.getString("RightIndexName","v");
     auto compute_qn = args.getBool("ComputeQNs",false);
 
     auto blocks = doTask(GetBlocks<T>{A.inds(),uI,vI},A.store());
@@ -276,8 +270,8 @@ svdImpl(IQTensor A,
 
         resize(d,this_m);
 
-        Liq.emplace_back(Index("l",this_m,litype),uI.qn(1+B.i1));
-        Riq.emplace_back(Index("r",this_m,ritype),vI.qn(1+B.i2));
+        Liq.emplace_back(Index("l",this_m),uI.qn(1+B.i1));
+        Riq.emplace_back(Index("r",this_m),vI.qn(1+B.i2));
         }
     
     auto L = IQIndex(lname,move(Liq),uI.dir());

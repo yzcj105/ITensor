@@ -45,7 +45,7 @@ SECTION("Constructors")
     {
     SECTION("One Index")
         {
-        auto i1 = Index("i1",5,Site);
+        auto i1 = Index("i1",5);
         auto I = IQIndex("one",
                          i1,QN(-1));
         CHECK(I.nindex() == 1);
@@ -54,8 +54,8 @@ SECTION("Constructors")
 
     SECTION("Two Indices")
         {
-        auto i1 = Index("i1",5,Site);
-        auto i2 = Index("i2",8,Site);
+        auto i1 = Index("i1",5);
+        auto i2 = Index("i2",8);
         auto I = IQIndex("two",
                          i1,QN(-1),
                          i2,QN(0));
@@ -66,9 +66,9 @@ SECTION("Constructors")
 
     SECTION("Three Indices")
         {
-        auto i1 = Index("i1",5,Site);
-        auto i2 = Index("i2",8,Site);
-        auto i3 = Index("i3",2,Site);
+        auto i1 = Index("i1",5);
+        auto i2 = Index("i2",8);
+        auto i3 = Index("i3",2);
         auto I = IQIndex("three",
                          i1,QN(-1),
                          i2,QN(0),
@@ -142,9 +142,9 @@ SECTION("Iterator")
 
 SECTION("sim function")
     {
-    auto i1 = Index("i1",5,Site);
-    auto i2 = Index("i2",8,Site);
-    auto i3 = Index("i3",2,Site);
+    auto i1 = Index("i1",5);
+    auto i2 = Index("i2",8);
+    auto i3 = Index("i3",2);
     auto I = IQIndex("I",
                      i1,QN(-1),
                      i2,QN(0),
@@ -156,7 +156,6 @@ SECTION("sim function")
         CHECK(I.index(n) == S1.index(n));
         }
     CHECK(S1 != I);
-    CHECK(S1.type() == I.type());
     CHECK(S1.m() == I.m());
     CHECK(S1.dir() == I.dir());
     CHECK(S1.primeLevel() == 0);
@@ -167,7 +166,6 @@ SECTION("sim function")
         CHECK(I.index(n) == S2.index(n));
         }
     CHECK(S2 != I);
-    CHECK(S2.type() == I.type());
     CHECK(S2.m() == I.m());
     CHECK(S2.dir() == I.dir());
     CHECK(S2.primeLevel() == 0);

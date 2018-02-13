@@ -50,12 +50,16 @@ plussers(IQIndex const& l1,
     auto siq = stdx::reserve_vector<IndexQN>(l1.nindex()+l2.nindex());
     for(auto iq1 : l1)
         {
-        auto s1 = Index(iq1.index.rawname(),iq1.m(),iq1.type());
+        // TODO: make sure this does:
+        // auto s1 = Index(iq1.index.rawname(),iq1.m(),iq1.type());
+        auto s1 = Index(iq1.index.rawname(),iq1.m());
         siq.emplace_back(s1,iq1.qn);
         }
     for(auto iq2 : l2)
         {
-        auto s2 = Index(iq2.index.rawname(),iq2.m(),iq2.type());
+        // TODO: make sure this does:
+        // auto s2 = Index(iq2.index.rawname(),iq2.m(),iq2.type());
+        auto s2 = Index(iq2.index.rawname(),iq2.m());
         siq.emplace_back(s2,iq2.qn);
         }
 #ifdef DEBUG
@@ -145,10 +149,14 @@ fitWF(const MPSt<Tensor>& psi_basis, MPSt<Tensor>& psi_to_fit)
     if(psi_to_fit.N() != N) 
         Error("Wavefunctions must have same number of sites.");
 
-    auto A = psi_to_fit.A(N) * dag(prime(psi_basis.A(N),Link));
+    // TODO: make sure this does:
+    // auto A = psi_to_fit.A(N) * dag(prime(psi_basis.A(N),Link));
+    auto A = psi_to_fit.A(N) * dag(prime(psi_basis.A(N)));
     for(int n = N-1; n > 1; --n)
         {
-        A *= dag(prime(psi_basis.A(n),Link));
+        // TODO: make sure this does:
+        // A *= dag(prime(psi_basis.A(n),Link));
+        A *= dag(prime(psi_basis.A(n)));
         A *= psi_to_fit.A(n);
         }
     A = psi_to_fit.A(1) * A;

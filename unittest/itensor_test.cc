@@ -81,10 +81,10 @@ randomData(size_t size)
 
 TEST_CASE("ITensor")
 {
-Index s1("s1",2,Site);
-Index s2("s2",2,Site);
-Index s3("s3",2,Site);
-Index s4("s4",2,Site);
+Index s1("s1",2);
+Index s2("s2",2);
+Index s3("s3",2);
+Index s4("s4",2);
 //Index s1P(prime(s1));
 //Index s2P(prime(s2));
 //Index s3P(prime(s3));
@@ -1320,9 +1320,9 @@ SECTION("Prime Level Functions")
 
 SECTION("Prime")
     {
-    Index x("x",2,Xtype),
-          z("z",2,Ztype),
-          v("v",2,Vtype);
+    Index x("x",2),
+          z("z",2),
+          v("v",2);
     ITensor T(x,z,v,prime(x));
     T = prime(T);
     CHECK(T.inds()[0] == prime(x));
@@ -1333,9 +1333,9 @@ SECTION("Prime")
 
 SECTION("PrimeLevel")
     {
-    Index x("x",2,Xtype),
-          z("z",2,Ztype),
-          v("v",2,Vtype);
+    Index x("x",2),
+          z("z",2),
+          v("v",2);
     ITensor T(x,z,v,prime(x));
     T.primeLevel(2,4,3,5);
     CHECK(T.inds()[0] == prime(x,2));
@@ -1387,18 +1387,6 @@ SECTION("NoprimeTest")
         CHECK_THROWS_AS(T.noprime(),ITError);
         }
     }
-
-SECTION("Prime IndexTypes")
-    {
-    Index x("x",2,Xtype),
-          z("z",2,Ztype),
-          v("v",2,Vtype);
-    ITensor T(x,z,v);
-    T = prime(T,Ztype,Vtype);
-    CHECK(T.inds()[0] == x);
-    CHECK(T.inds()[1] == prime(z));
-    CHECK(T.inds()[2] == prime(v));
-    }
 }
 
 SECTION("CommonIndex")
@@ -1417,7 +1405,7 @@ c = commonIndex(T2,T3);
 CHECK(!c);
 
 CHECK(commonIndex(T1,T2) == s1);
-CHECK(commonIndex(T1,T2,Site) == s1);
+//CHECK(commonIndex(T1,T2,Site) == s1);
 }
 
 SECTION("Diag ITensor Contraction")

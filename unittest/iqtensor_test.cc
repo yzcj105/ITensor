@@ -72,15 +72,15 @@ operator<<(std::ostream& s, QType t)
 TEST_CASE("IQTensorTest")
 {
 
-auto S1 = IQIndex("S1",Index("S1-",1,Site),QN(-1),
-                       Index("S1+",1,Site),QN(+1));
-auto S2 = IQIndex("S2",Index("S2-",1,Site),QN(-1),
-                       Index("S2+",1,Site),QN(+1));
-auto S3 = IQIndex("S3",Index("S3-",1,Site),QN(-1),
-                       Index("S3+",1,Site),QN(+1));
+auto S1 = IQIndex("S1",Index("S1-",1),QN(-1),
+                       Index("S1+",1),QN(+1));
+auto S2 = IQIndex("S2",Index("S2-",1),QN(-1),
+                       Index("S2+",1),QN(+1));
+auto S3 = IQIndex("S3",Index("S3-",1),QN(-1),
+                       Index("S3+",1),QN(+1));
 
-auto S4 = IQIndex("S4",Index("S4-",1,Site),QN(-1),
-                       Index("S4+",1,Site),QN(+1));
+auto S4 = IQIndex("S4",Index("S4-",1),QN(-1),
+                       Index("S4+",1),QN(+1));
 
 auto L1 = IQIndex("L1",
                   Index("L1+",2),QN(+1),
@@ -163,9 +163,9 @@ SECTION("Contracting Product")
     SECTION("Regression Test 1")
         {
         auto s = IQIndex("S=1 site",
-                  Index("Up",1,Site),QN("Sz=",+2),
-                  Index("Z0",1,Site),QN("Sz=", 0),
-                  Index("Dn",1,Site),QN("Sz=",-2));
+                  Index("Up",1),QN("Sz=",+2),
+                  Index("Z0",1),QN("Sz=", 0),
+                  Index("Dn",1),QN("Sz=",-2));
 
         auto sP = prime(s);
 
@@ -204,8 +204,8 @@ SECTION("Contracting Product")
 		//to print the result C of the following contraction
         //Bug was that doTask(CalcDiv) was being too stingy about
         //QDense storage with no blocks and throwing an exception
-		auto s = IQIndex("S",Index("s+",1,Site),QN(1),Index("s-",1,Site),QN(-1));
-		auto l = IQIndex("L",Index("l",1,Link),QN(3));
+		auto s = IQIndex("S",Index("s+",1),QN(1),Index("s-",1),QN(-1));
+		auto l = IQIndex("L",Index("l",1),QN(3));
 
 		auto A = IQTensor(s,l);
 		A.set(s(1),l(1),1);
@@ -624,8 +624,8 @@ SECTION("Combiner")
 
     SECTION("Combiner Arrow Regression Test")
         {
-        IQIndex s9("S9",Index{"Up 9",1,Site},QN(+1),
-                        Index{"Dn 9",1,Site},QN(-1));
+        IQIndex s9("S9",Index{"Up 9",1},QN(+1),
+                        Index{"Dn 9",1},QN(-1));
 
         IQIndex hl8("hl8",Index{"hl8 0",3},QN(0),
                           Index{"hl8-2",1},QN(-2),
@@ -1028,8 +1028,8 @@ SECTION("Scalar Storage")
 
 SECTION("Mixed Storage")
     {
-    auto s = IQIndex("s",Index("s+",1,Site),QN(+1),
-                         Index("s-",1,Site),QN(-1));
+    auto s = IQIndex("s",Index("s+",1),QN(+1),
+                         Index("s-",1),QN(-1));
     auto T = mixedIQTensor(s,prime(s));
     T.set(s(1),prime(s)(1),11);
     T.set(s(1),prime(s)(2),12);

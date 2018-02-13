@@ -18,6 +18,15 @@
 
 namespace itensor {
 
+namespace indexnames
+{
+    const std::string BaseSite = "Site = ";
+    const std::string BaseLink = "Link = ";
+} // namespace indexnames
+
+const std::string Site = indexnames::BaseSite + "#*";
+const std::string Link = indexnames::BaseLink + "#*";
+
 size_t inline constexpr 
 INSize() { return 11ul; }
 

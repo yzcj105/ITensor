@@ -146,9 +146,6 @@ struct IndexQN
     auto
     m() const -> decltype(index.m()) { return index.m(); }
 
-    IndexType
-    type() const { return index.type(); }
-
     void
     write(std::ostream & s) const;
 
@@ -206,13 +203,10 @@ class IQIndexVal
     prime(int inc = 1);
 
     IQIndexVal& 
-    prime(IndexType type, int inc = 1);
+    noprime();
 
     IQIndexVal& 
-    noprime(IndexType type = All);
-
-    IQIndexVal& 
-    mapprime(int plevold, int plevnew, IndexType type = All);
+    mapprime(int plevold, int plevnew);
     };
 
 ITensor
@@ -299,21 +293,20 @@ noprime(IQIndex I, VArgs&&... vargs)
 //Return a copy of I with prime level changed to plevnew if
 //old prime level was plevold. Otherwise has no effect.
 IQIndex inline
-mapprime(IQIndex I, 
-         int plevold, 
-         int plevnew, 
-         IndexType type = All)
+mapprime(IQIndex I,
+         int plevold,
+         int plevnew)
     { 
-    I.mapprime(plevold,plevnew,type); 
-    return I; 
+    I.mapprime(plevold,plevnew);
+    return I;
     }
 
 template<typename... VArgs>
 IQIndexVal
-prime(IQIndexVal I, VArgs&&... vargs) 
+prime(IQIndexVal I, VArgs&&... vargs)
     { 
-    I.prime(std::forward<VArgs>(vargs)...); 
-    return I; 
+    I.prime(std::forward<VArgs>(vargs)...);
+    return I;
     }
 
 template<typename... VArgs>
@@ -327,9 +320,9 @@ noprime(IQIndexVal I, VArgs&&... vargs)
 //Return a copy of I with prime level changed to plevnew if
 //old prime level was plevold. Otherwise has no effect.
 IQIndexVal inline
-mapprime(IQIndexVal I, int plevold, int plevnew, IndexType type = All)
+mapprime(IQIndexVal I, int plevold, int plevnew)
     { 
-    I.mapprime(plevold,plevnew,type); 
+    I.mapprime(plevold,plevnew); 
     return I; 
     }
 
@@ -376,7 +369,7 @@ IQIndex(std::string const& name,
     auto iq = stdx::reserve_vector<IndexQN>(size);
     auto am = detail::fill(iq,i1,q1,rest...);
     dir_ = am.dir;
-    auto I = Index(name,am.m,i1.type(),i1.primeLevel());
+    auto I = Index(name,am.m,i1.primeLevel());
     parent::operator=(I);
     makeStorage(std::move(iq));
     }

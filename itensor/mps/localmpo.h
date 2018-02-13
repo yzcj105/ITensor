@@ -308,7 +308,7 @@ LocalMPO(const MPOt<Tensor>& H,
     PH_[0] = LH;
     PH_[H.N()+1] = RH;
     if(H.N()==2)
-        lop_.update(Op_->A(1),Op_->A(2),L(),R());
+        lop_.update(Op_->A(1),Op_->A(2),L(),R(),1);
     if(args.defined("NumCenter"))
         numCenter(args.getInt("NumCenter"));
     }
@@ -353,7 +353,7 @@ LocalMPO(MPOt<Tensor> const& H,
     { 
     PH_.at(LHlim) = LH;
     PH_.at(RHlim) = RH;
-    if(H.N()==2) lop_.update(Op_->A(1),Op_->A(2),L(),R());
+    if(H.N()==2) lop_.update(Op_->A(1),Op_->A(2),L(),R(),1);
     if(args.defined("NumCenter")) numCenter(args.getInt("NumCenter"));
     }
 
@@ -369,8 +369,10 @@ product(const Tensor& phi, Tensor& phip) const
     if(Psi_ != 0)
         {
         int b = position();
-        auto othr = (!L() ? dag(prime(Psi_->A(b),Link)) : L()*dag(prime(Psi_->A(b),Link)));
-        auto othrR = (!R() ? dag(prime(Psi_->A(b+1),Link)) : R()*dag(prime(Psi_->A(b+1),Link)));
+        // TODO: make sure only Links are primed
+        auto othr = (!L() ? dag(prime(Psi_->A(b))) : L()*dag(prime(Psi_->A(b))));
+        // TODO: make sure only Links are primed
+        auto othrR = (!R() ? dag(prime(Psi_->A(b+1))) : R()*dag(prime(Psi_->A(b+1))));
         othr *= othrR;
         auto z = (othr*phi).cplx();
 
@@ -421,7 +423,7 @@ position(int b, const MPSType& psi)
 
     if(Op_ != 0) //normal MPO case
         {
-        lop_.update(Op_->A(b),Op_->A(b+1),L(),R());
+        lop_.update(Op_->A(b),Op_->A(b+1),L(),R(),b);
         }
     }
 
@@ -464,7 +466,7 @@ shift(int j, Direction dir, const Tensor& A)
         setLHlim(j);
         setRHlim(j+nc_+1);
 
-        lop_.update(Op_->A(j+1),Op_->A(j+2),L(),R());
+        lop_.update(Op_->A(j+1),Op_->A(j+2),L(),R(),j+1);
         }
     else //dir == Fromright
         {
@@ -481,7 +483,7 @@ shift(int j, Direction dir, const Tensor& A)
         setLHlim(j-nc_-1);
         setRHlim(j);
 
-        lop_.update(Op_->A(j-1),Op_->A(j),L(),R());
+        lop_.update(Op_->A(j-1),Op_->A(j),L(),R(),j-1);
         }
     }
 
@@ -498,7 +500,8 @@ makeL(const MPSType& psi, int k)
                 {
                 const int ll = LHlim_;
                 PH_.at(ll+1) = (!PH_.at(ll) ? psi.A(ll+1) : PH_[ll]*psi.A(ll+1));
-                PH_[ll+1] *= dag(prime(Psi_->A(ll+1),Link));
+                // TODO: make sure only Links are primed
+                PH_[ll+1] *= dag(prime(Psi_->A(ll+1)));
                 setLHlim(ll+1);
                 }
             }
@@ -536,7 +539,8 @@ makeR(const MPSType& psi, int k)
                 {
                 const int rl = RHlim_;
                 PH_.at(rl-1) = (!PH_.at(rl) ? psi.A(rl-1) : PH_[rl]*psi.A(rl-1));
-                PH_[rl-1] *= dag(prime(Psi_->A(rl-1),Link));
+                // TODO: make sure only links are primed
+                PH_[rl-1] *= dag(prime(Psi_->A(rl-1)));
                 setRHlim(rl-1);
                 }
             }

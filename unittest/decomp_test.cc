@@ -178,8 +178,8 @@ SECTION("IQTensor SVD")
         {
         //Feb 10, 2016: code that fixes sign of
         //singular values to be positive was broken
-		auto s1 = IQIndex("s1",Index("s1+",1,Site),QN(+1),Index("s1-",1,Site),QN(-1));
-		auto s2 = IQIndex("s2",Index("s2+",1,Site),QN(+1),Index("s2-",1,Site),QN(-1));
+		auto s1 = IQIndex("s1",Index("s1+",1),QN(+1),Index("s1-",1),QN(-1));
+		auto s2 = IQIndex("s2",Index("s2+",1),QN(+1),Index("s2-",1),QN(-1));
 		auto sing = IQTensor(s1,s2);
 		sing.set(s1(1),s2(2), 1./sqrt(2));
 		sing.set(s1(2),s2(1),-1./sqrt(2));
@@ -199,10 +199,10 @@ SECTION("IQTensor denmatDecomp")
     {
     SECTION("Test 1")
         {
-        IQIndex S1("S1",Index("s1+",1,Site),QN(+1),
-                        Index("s1-",1,Site),QN(-1));
-        IQIndex S2("S2",Index("s2+",1,Site),QN(+1),
-                        Index("s2-",1,Site),QN(-1));
+        IQIndex S1("S1",Index("s1+",1),QN(+1),
+                        Index("s1-",1),QN(-1));
+        IQIndex S2("S2",Index("s2+",1),QN(+1),
+                        Index("s2-",1),QN(-1));
         IQIndex L1("L1",Index("l1+2",3),QN(+2),
                         Index("l1+1",4),QN(+1),
                         Index("l1 0",8),QN( 0),

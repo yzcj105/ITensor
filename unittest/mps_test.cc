@@ -118,7 +118,7 @@ SECTION("Orthogonalize")
 
     for(int n = N; n > 1; --n)
         {
-        auto li = commonIndex(psi.A(n),psi.A(n-1),Link);
+        auto li = commonIndex(psi.A(n),psi.A(n-1));
         auto rho = psi.A(n) * dag(prime(psi.A(n),li));
         auto id = ITensor(li,prime(li));
         for(auto l : range1(li.m()))

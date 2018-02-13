@@ -44,7 +44,7 @@ SECTION("Orthogonalize")
 
     for(int n = N; n > 1; --n)
         {
-        auto li = commonIndex(W.A(n),W.A(n-1),Link);
+        auto li = commonIndex(W.A(n),W.A(n-1));
         auto rho = W.A(n) * dag(prime(W.A(n),li));
         auto id = ITensor(li,prime(li));
         for(auto l : range1(li.m()))
@@ -157,7 +157,7 @@ SECTION("Overlap <psi|HK|phi>")
         randomize(K.Aref(j));
         H.Aref(j) *= 0.2;
         K.Aref(j) *= 0.3;
-        Hdag.Aref(j) = dag(swapPrime(H.A(j),0,1,Site));
+        Hdag.Aref(j) = dag(swapPrime(H.A(j),0,1));
         }
 
     auto Hdphi = exactApplyMPO(Hdag,phi,{"Cutoff=",1E-13,"Maxm=",5000});

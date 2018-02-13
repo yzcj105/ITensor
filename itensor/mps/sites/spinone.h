@@ -36,10 +36,10 @@ class SpinOneSite
 
     SpinOneSite(int n, Args const& args = Args::global())
         {
-        s = IQIndex{nameint("S=1 site=",n),
-            Index(nameint("Up:site",n),1,Site),QN("Sz=",+2),
-            Index(nameint("Z0:site",n),1,Site),QN("Sz=", 0),
-            Index(nameint("Dn:site",n),1,Site),QN("Sz=",-2)};
+        s = IQIndex{nameint(indexnames::BaseSite,n),
+            Index(nameint("Up:site",n),1),QN("Sz=",+2),
+            Index(nameint("Z0:site",n),1),QN("Sz=", 0),
+            Index(nameint("Dn:site",n),1),QN("Sz=",-2)};
         }
 
     IQIndex

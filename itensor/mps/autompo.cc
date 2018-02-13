@@ -643,7 +643,7 @@ toMPOImpl(AutoMPO const& am,
             }
         inqn.emplace_back(Index(format("hl%d_%d",n,count++),currm),currq);
 
-        links.at(n) = IQIndex(nameint("Hl",n),move(inqn));
+        links.at(n) = IQIndex(nameint(indexnames::BaseLink,n),move(inqn));
         //printfln("links[%d]=\n%s",n,links[n]);
 
         //if(n <= 2 or n == N)
@@ -1168,7 +1168,7 @@ compressMPO(SiteSet const& sites,
     
     int d0 = isExpH ? 1 : 2;
     
-    links.at(0) = IQIndex("Hl0",Index("hl0_0",d0),ZeroQN);
+    links.at(0) = IQIndex("h0",Index("hl0_0",d0),ZeroQN);
 
     auto max_d = links.at(0).m();
     for(int n = 1; n <= N; ++n)
@@ -1215,7 +1215,7 @@ compressMPO(SiteSet const& sites,
             int m = ncols(V_npp[q]);
             inqn.emplace_back(Index(format("hl%d_%d",n,count++),m),q);
             }
-        links.at(n) = IQIndex(nameint("Hl",n),move(inqn));
+        links.at(n) = IQIndex(nameint(indexnames::BaseLink,n),move(inqn));
 
         //
         // Construct the compressed MPO
@@ -1561,7 +1561,7 @@ toExpH_ZW1(const AutoMPO& am,
             }
         inqn.emplace_back(Index(format("hl%d_%d",n,count++),currm),currq);
 
-        links.at(n) = IQIndex(nameint("Hl",n),move(inqn));
+        links.at(n) = IQIndex(nameint(indexnames::BaseLink,n),move(inqn));
 
         //if(n <= 2 or n == N)
         //    {

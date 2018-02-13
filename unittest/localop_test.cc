@@ -8,18 +8,18 @@ using namespace itensor;
 
 TEST_CASE("LocalOp")
 {
-auto s1 = Index("s1",2,Site);
-auto s2 = Index("s2",2,Site);
+auto s1 = Index("s1",2);
+auto s2 = Index("s2",2);
 auto h0 = Index("h0",4);
 auto h1 = Index("h1",4);
 auto h2 = Index("h2",4);
 auto l0 = Index("l0",10);
 auto l2 = Index("l2",10);
 
-auto S1 = IQIndex("S1",Index("s1-",1,Site),QN(-1),
-                       Index("s1+",1,Site),QN(+1));
-auto S2 = IQIndex("S2",Index("s2-",1,Site),QN(-1),
-                       Index("s2+",1,Site),QN(+1));
+auto S1 = IQIndex("S1",Index("s1-",1),QN(-1),
+                       Index("s1+",1),QN(+1));
+auto S2 = IQIndex("S2",Index("s2-",1),QN(-1),
+                       Index("s2+",1),QN(+1));
 auto H0 = IQIndex("H0",Index("h0-2",4),QN(-2),
                        Index("h0+0",8),QN(+0),
                        Index("h0+2",4),QN(+2));
