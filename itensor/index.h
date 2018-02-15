@@ -190,8 +190,15 @@ void
 splitRawnamePrimelevel(std::string const& startstr, std::string & rawname, 
                        int & primelevel, bool & wildcard, int & primeincrease);
 
+void
+splitRawname(std::string const& startstr, std::string & rawname, 
+             int & primelevel, bool & wildcard, int & primeincrease, bool & numberwildcard);
+
 bool
 nameMatch(Index const& ind, std::string const& str);
+
+bool
+matchNumberwildcard(std::string const& str1, std::string const& str2, bool const& numberwildcard, int & intmatch);
 
 // Sets the name to a specified value.
 Index
