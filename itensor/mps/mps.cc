@@ -442,7 +442,7 @@ void MPSt<Tensor>::
 init_tensors(std::vector<ITensor>& A_, InitState const& initState)
     { 
     std::vector<Index> a(N_+1);
-    for(auto i : range1(N_)) a[i] = Index(nameint("a",i));
+    for(auto i : range1(N_)) a[i] = Index(nameint(indexnames::BaseLink,i));
 
     A_[1] = setElt(IndexVal(initState(1)),a[1](1));
     for(auto i : range(2,N_))
