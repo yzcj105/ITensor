@@ -121,12 +121,26 @@ Index& Index::
 rename(std::string const& str) 
     {
     std::string strname;
-    int strprimelevel;
-    bool wildcard;
-    int primeincrease;
-    splitRawnamePrimelevel(str, strname, strprimelevel, wildcard, primeincrease);
-    name_ = IndexName(strname.c_str());
-    if(not wildcard) 
+    int strprimelevel,
+        primeincrease;
+    bool wildcard,
+         numberwildcard;
+    splitRawname(str, strname, strprimelevel, wildcard, primeincrease, numberwildcard);
+
+    int intmatch;
+    bool ismatch = matchNumberwildcard(name_.c_str(), strname, numberwildcard, intmatch);
+
+    if( numberwildcard )
+        {
+        if( not ismatch )
+            Error("If using # wildcard, names must match");
+        }
+    else
+        {
+        name_ = IndexName(strname.c_str());
+        }
+
+    if( not wildcard ) 
         {
         primelevel_ = strprimelevel;
         }
@@ -335,6 +349,62 @@ splitRawnamePrimelevel(std::string const& startstr, std::string & rawname,
         }
     }
 
+void
+splitRawnameNumberwildcard(std::string const& startstr, std::string & rawname,
+                           bool & numberwildcard)
+    {
+    // Check location of "#"
+    auto w = startstr.find("#");
+    auto N = startstr.length();
+    if(w == std::string::npos)
+        {
+        numberwildcard = false;
+        rawname = startstr.c_str();
+        }
+    else if(w == N-1)
+        {
+        numberwildcard = true;
+        rawname = startstr.substr(0,w);
+        }
+    else
+        {
+        Error("# must be at the end of the Index name");
+        }
+    }
+
+void
+splitRawname(std::string const& startstr, std::string & rawname,
+             int & primelevel, bool & wildcard, int & primeincrease,
+             bool & numberwildcard)
+    {
+    std::string rawname_temp;
+    splitRawnamePrimelevel(startstr, rawname_temp, primelevel, wildcard, primeincrease);
+    splitRawnameNumberwildcard(rawname_temp, rawname, numberwildcard);
+    }
+
+bool
+matchNumberwildcard(std::string const& str1, std::string const& str2, bool const& numberwildcard, int & intmatch)
+    {
+    if( numberwildcard )
+        {
+        auto N1 = str1.length();
+        auto N2 = str2.length();
+
+        auto str1start = str1.substr(0,N2);
+        auto str1end = str1.substr(N2,N1);
+
+        // Checks if the rest of the string is a number
+        intmatch = std::stoi(str1end);
+
+        return (str1start == str2);
+        }
+    else
+        {
+        return (str1 == str2);
+        }
+
+    }
+
 bool
 nameMatch(Index const& ind, std::string const& str)
     {
@@ -342,18 +412,21 @@ nameMatch(Index const& ind, std::string const& str)
     auto primelevel1 = ind.primeLevel();
 
     std::string rawname2;
-    int primelevel2;
-    bool wildcard2;
-    int primeincrease2;
-    splitRawnamePrimelevel(str, rawname2, primelevel2, wildcard2, primeincrease2);
+    int primelevel2,
+        primeincrease2,
+        intmatch2;
+    bool wildcard2,
+         numberwildcard2;
+    splitRawname(str, rawname2, primelevel2, wildcard2, primeincrease2, numberwildcard2);
 
+    bool ismatch = matchNumberwildcard(rawname1, rawname2, numberwildcard2, intmatch2);
     if(wildcard2)
         {
-        return (rawname1 == rawname2) && (primelevel1 >= primelevel2);
+        return ismatch && (primelevel1 >= primelevel2);
         }
     else
         {
-        return (rawname1 == rawname2) && (primelevel1 == primelevel2);
+        return ismatch && (primelevel1 == primelevel2);
         }
     }
 
