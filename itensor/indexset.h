@@ -152,7 +152,7 @@ class IndexSetT : public RangeT<index_type_>
     rename(std::string const& s1, std::string const& s2)
         {
         for(auto i = 0; i < parent::size(); i++) 
-            if(nameMatch(parent::index(i),s1)) parent::index(i).rename(s2);
+            parent::index(i).rename(s1,s2);
         return *this;
         }
 
