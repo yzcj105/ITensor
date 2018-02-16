@@ -112,51 +112,86 @@ string Index::
 name() const  { return putprimes(name_.c_str(),primelevel_); }
 
 Index& Index::
-rename(std::string const& str) 
+rename(std::string const& str1, std::string const& str2)
     {
-    std::string strname;
-    int strprimelevel,
-        primeincrease;
-    bool wildcard,
-         numberwildcard;
-    splitRawname(str, strname, strprimelevel, wildcard, primeincrease, numberwildcard);
+    std::string strname1;
+    int strprimelevel1,
+        primeincrease1;
+    bool wildcard1,
+         numberwildcard1;
+    splitRawname(str1, strname1, strprimelevel1, wildcard1, primeincrease1, numberwildcard1);
+
+    std::string strname2;
+    int strprimelevel2,
+        primeincrease2;
+    bool wildcard2,
+         numberwildcard2;
+    splitRawname(str2, strname2, strprimelevel2, wildcard2, primeincrease2, numberwildcard2);
 
     int intmatch;
-    bool ismatch = matchNumberwildcard(name_.c_str(), strname, numberwildcard, intmatch);
+    bool namematch = matchNumberwildcard(name_.c_str(), strname1, numberwildcard1, intmatch);
 
-    if( numberwildcard )
+    bool primematch;
+    if(wildcard1)
         {
-        if( not ismatch )
-            Error("If using # wildcard, names must match");
+        primematch = (primelevel_ >= strprimelevel1);
         }
     else
         {
-        name_ = IndexName(strname.c_str());
+        primematch = (primelevel_ == strprimelevel1);
         }
 
-    if( not wildcard ) 
+    if( namematch && primematch )
         {
-        primelevel_ = strprimelevel;
+        if( !numberwildcard1 && numberwildcard2 )
+            {
+            Error("In Index.rename(), number wildcard # only on second input");
+            }
+        else if( numberwildcard1 && numberwildcard2 )
+            {
+            name_ = IndexName(nameint(strname2,intmatch).c_str());
+            }
+        else
+            {
+            name_ = IndexName(strname2.c_str());
+            }
+
+        if( not wildcard2 )
+            {
+            primelevel_ = strprimelevel2;
+            }
+        else
+            {
+            if(strprimelevel2 > 0) Error("No primes before *");
+            primelevel_ += primeincrease2;
+            }
         }
-    else
-        {
-        if(strprimelevel > 0) Error("No primes before *");
-        primelevel_ += primeincrease;
-        }
+
     return *this;
     }
 
+Index& Index::
+rename(std::string const& str)
+    {
+    return this->rename(this->name(),str);
+    }
+
 Index
-rename(Index i, std::string const& s) 
+rename(Index i, std::string const& str1, std::string const& str2) 
     { 
-    return i.rename(s);
+    return i.rename(str1,str2);
+    }
+
+Index
+rename(Index i, std::string const& str) 
+    { 
+    return i.rename(str);
     }
 
 Index Index::
 operator()(std::string const& s)
     {
-    auto i = *this;
-    return i.rename(s);
+    return this->rename(s);
     }
 
 Index::
@@ -366,9 +401,15 @@ matchNumberwildcard(std::string const& str1, std::string const& str2, bool const
         auto str1end = str1.substr(N2,N1);
 
         // Checks if the rest of the string is a number
-        intmatch = std::stoi(str1end);
-
-        return (str1start == str2);
+        if( str1start == str2 )
+            {
+            intmatch = std::stoi(str1end);
+            return true;
+            }
+        else
+            {
+            return false;
+            }
         }
     else
         {

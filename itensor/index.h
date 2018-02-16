@@ -101,7 +101,10 @@ class Index
 
     // Sets the name to a specified value.
     Index& 
-    rename(std::string const& s);
+    rename(std::string const& str1, std::string const& str2);
+
+    Index& 
+    rename(std::string const& str);
 
     // Sets the name to a specified value.
     Index
@@ -202,7 +205,10 @@ matchNumberwildcard(std::string const& str1, std::string const& str2, bool const
 
 // Sets the name to a specified value.
 Index
-rename(Index i, std::string const& s);
+rename(Index i, std::string const& str1, std::string const& str2);
+
+Index
+rename(Index i, std::string const& str);
 
 // i1 compares equal to i2 if i2 is a copy of i1 with same primelevel
 bool 
