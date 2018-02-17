@@ -191,7 +191,8 @@ rename(Index i, std::string const& str)
 Index Index::
 operator()(std::string const& s)
     {
-    return this->rename(s);
+    auto i = *this;
+    return i.rename(s);
     }
 
 Index::
