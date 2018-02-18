@@ -538,11 +538,19 @@ long
 findindex(const IndexSetT<IndexT>& iset, 
           const std::string& s)
     {
+    int pos = -1;
     for(long j = 0; j < iset.r(); ++j)
         {
-        if(nameMatch(iset[j],s)) return j;
+        if(nameMatch(iset[j],s))
+            {
+            if( pos!=-1 )
+                {
+                Error("Too many indexes found");
+                }
+            pos = j;
+            }
         }
-    return -1;
+    return pos;
     }
 
 template <class IndexT>
