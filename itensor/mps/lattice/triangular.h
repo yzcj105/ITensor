@@ -26,8 +26,10 @@ triangularLattice(int Nx,
                   Args const& args = Args::global())
     {
     auto yperiodic = args.getBool("YPeriodic",true);
+    auto xperiodic = args.getBool("XPeriodic",false);
     // Periodicity on y is meaningless for one dimensional chain or a ladder
     yperiodic = yperiodic && (Ny > 2);
+    xperiodic = xperiodic && (Nx > 2);
     auto N = Nx*Ny;
     auto Nbond = 3*N-2*Ny + (yperiodic ? 0 : -2*Nx+1);
     LatticeGraph latt; 

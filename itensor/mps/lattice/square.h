@@ -26,10 +26,12 @@ squareLattice(int Nx,
               Args const& args = Args::global())
     {
     auto yperiodic = args.getBool("YPeriodic",false);
+    auto xperiodic = args.getBool("XPeriodic",false);
     // Periodicity on y is meaningless for one dimensional chain or a ladder
     yperiodic = yperiodic && (Ny > 2);
+    xperiodic = xperiodic && (Nx > 2);
     auto N = Nx*Ny;
-    auto Nbond = 2*N-Ny + (yperiodic ? 0 : -Nx);
+    auto Nbond = 2*N + (xperiodic ? 0 : -Ny )  + (yperiodic ? 0 : -Nx);
     LatticeGraph latt; 
     latt.reserve(Nbond);
     for(int n = 1; n <= N; ++n)
@@ -39,13 +41,15 @@ squareLattice(int Nx,
 
         //X-direction bond
         if(x < Nx) latt.emplace_back(n,n+Ny,x,y,x+1,y);
+        //Periodic X bond
+        if( xperiodic && x == 1) latt.emplace_back(n, n+Ny*(Nx-1),x,y,x+Nx-1,y);
 
         if(Ny > 1)
             {
             //Y-direction bond
             if(y < Ny) latt.emplace_back(n,n+1,x,y,x,y+1);
-            //Periodic bond
-            if(yperiodic && y == 1) latt.emplace_back(n,n+Ny-1,x,y,x,y+Ny);
+            //Periodic Y bond
+            if(yperiodic && y == 1) latt.emplace_back(n,n+Ny-1,x,y,x,y+Ny-1);
             }
         }
     if(int(latt.size()) != Nbond) Error("Square latt wrong number of bonds");
@@ -58,8 +62,10 @@ squareNextNeighbor(int Nx,
                    Args const& args = Args::global())
     {
     auto yperiodic = args.getBool("YPeriodic",false);
+    auto xperiodic = args.getBool("XPeriodic",false);
     // Periodicity on y is meaningless for one dimensional chain or a ladder
     yperiodic = yperiodic && (Ny > 2);
+    xperiodic = xperiodic && (Nx > 2);
     auto N = Nx*Ny;
     LatticeGraph latt; 
     for(int n = 1; n <= N; ++n)
@@ -73,21 +79,36 @@ squareNextNeighbor(int Nx,
             //X-direction bond
             latt.emplace_back(n,n+Ny,x,y,x+1,y,"1");
             }
+        // Periodic X bond
+        if( xperiodic && x == 1) latt.emplace_back(n, n+Ny*(Nx-1),x,y,x+Nx-1,y);
         if(Ny > 1)
             {
             //Y-direction bond
             if(y < Ny) latt.emplace_back(n,n+1,x,y,x,y+1,"1");
             //Periodic Y bond
-            if(yperiodic && y == 1) latt.emplace_back(n,n+Ny-1,x,y,x,y+Ny,"1");
+            if(yperiodic && y == 1) latt.emplace_back(n,n+Ny-1,x,y,x,y+Ny-1,"1");
             }
 
         //Second-neighbor bonds
         if(x < Nx && Ny > 1)
             {
             //Next-Neighbor X +Y
-            if(y < Ny) latt.emplace_back(n,n+Ny+1,x,y,x+1,y+1,"2");
+            if(y < Ny)
+                {
+                latt.emplace_back(n,n+Ny+1,x,y,x+1,y+1,"2");
+                // Periodic Next-Neighbor X +Y
+                if (xperiodic && x == 1)
+                    latt.emplace_back(n,n+(Nx-1)*Ny+1,1,y,Nx,y+1,"2");
+                }
             //Next-Neighbor X -Y
-            if(y > 1) latt.emplace_back(n,n+Ny-1,x,y,x+1,y-1,"2");
+            if(y > 1)
+                {
+                latt.emplace_back(n,n+Ny-1,x,y,x+1,y-1,"2");
+                // Periodic Next-Neighbor X -Y
+                if (xperiodic && x == 1)
+                    latt.emplace_back(n,n+(Nx-1)*Ny-1,1,y,Nx,y-1,"2");
+                }
+            
             //Periodic Next-Neighbor bonds
             if(yperiodic && y == Ny) 
                 {
@@ -100,6 +121,12 @@ squareNextNeighbor(int Nx,
                 latt.emplace_back(n,n+2*Ny-1,x,1,x+1,Ny,"2");
                 }
             }
+        // in the corners
+       }
+      if( xperiodic && yperiodic ) 
+        {
+        latt.emplace_back(1,N,1,1,Nx,Ny,"2");
+        latt.emplace_back(Ny,(Nx-1)*Ny+1,1,Ny,Nx,1,"2");
         }
     return latt;
     }
